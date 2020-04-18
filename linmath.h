@@ -1,7 +1,7 @@
 #include <math.h> // based on https://github.com/datenwolf/linmath.h
 // massaged to C99 and more consistent code style
 // removed rogue inlining - depend on gcc, clang and llvm global inlining optimization instead
-// made into single file header style library
+// made into single file hreader style library
 
 // linmath.h -- A small library for linear math as required for computer graphics
 // provides the most frequently used types required for programming computer graphics:
@@ -15,14 +15,6 @@
 // The types are *deliberately* named like the types in GLSL. In fact they are meant to
 // be used for the client side computations and passing to same typed GLSL uniforms.
 
-#ifdef __cplusplus
-#define BEGIN_C extern "C" {
-#define END_C } // extern "C"
-#else
-#define BEGIN_C
-#define END_C
-#endif
-
 BEGIN_C
 
 #ifdef LINMATH_IMPLEMENTATION
@@ -33,43 +25,43 @@ BEGIN_C
 
 #define linmath_curly_init(...) { __VA_ARGS__ } // because cannot use {,} inside linmat_implements()
 
-#define linmath_vec_definition(n) \
-\
-typedef float vec##n[n]; \
-void vec##n##_add(vec##n r, vec##n const a, vec##n const b) linmat_implements({ \
-    for (int i = 0; i < n; i++) { r[i] = a[i] + b[i]; } \
-}) \
-\
-void vec##n##_sub(vec##n r, vec##n const a, vec##n const b) linmat_implements({ \
-    for (int i = 0; i < n; i++) { r[i] = a[i] - b[i]; } \
-}) \
-\
+#define linmath_vec_definition(n)                                                \
+                                                                                 \
+typedef float vec##n[n];                                                         \
+void vec##n##_add(vec##n r, vec##n const a, vec##n const b) linmat_implements({  \
+    for (int i = 0; i < n; i++) { r[i] = a[i] + b[i]; }                          \
+})                                                                               \
+                                                                                 \
+void vec##n##_sub(vec##n r, vec##n const a, vec##n const b) linmat_implements({  \
+    for (int i = 0; i < n; i++) { r[i] = a[i] - b[i]; }                          \
+})                                                                               \
+                                                                                 \
 void vec##n##_scale(vec##n r, vec##n const v, float const s) linmat_implements({ \
-    for (int i = 0; i < n; i++) { r[i] = v[i] * s; }\
-}) \
-\
-float vec##n##_mul_inner(vec##n const a, vec##n const b) linmat_implements({ \
-    float p = 0; \
-    for (int i = 0; i < n; i++) \
-        p += b[i] * a[i]; \
-    return p; \
-}) \
-\
-float vec##n##_len(vec##n const v) linmat_implements({ \
-    return sqrtf(vec##n##_mul_inner(v,v)); \
-}) \
-\
-void vec##n##_norm(vec##n r, vec##n const v) linmat_implements({ \
-    float k = 1 / vec##n##_len(v); \
-    vec##n##_scale(r, v, k); \
-}) \
-\
-void vec##n##_min(vec##n r, vec##n const a, vec##n const b) linmat_implements({ \
-    for (int i = 0; i < n; i++) { r[i] = a[i]<b[i] ? a[i] : b[i]; } \
-}) \
-\
-void vec##n##_max(vec##n r, vec##n const a, vec##n const b) linmat_implements({ \
-    for (int i = 0; i < n; i++) { r[i] = a[i]>b[i] ? a[i] : b[i]; } \
+    for (int i = 0; i < n; i++) { r[i] = v[i] * s; }                             \
+})                                                                               \
+                                                                                 \
+float vec##n##_mul_inner(vec##n const a, vec##n const b) linmat_implements({     \
+    float p = 0;                                                                 \
+    for (int i = 0; i < n; i++)                                                  \
+        p += b[i] * a[i];                                                        \
+    return p;                                                                    \
+})                                                                               \
+                                                                                 \
+float vec##n##_len(vec##n const v) linmat_implements({                           \
+    return sqrtf(vec##n##_mul_inner(v,v));                                       \
+})                                                                               \
+                                                                                 \
+void vec##n##_norm(vec##n r, vec##n const v) linmat_implements({                 \
+    float k = 1 / vec##n##_len(v);                                               \
+    vec##n##_scale(r, v, k);                                                     \
+})                                                                               \
+                                                                                 \
+void vec##n##_min(vec##n r, vec##n const a, vec##n const b) linmat_implements({  \
+    for (int i = 0; i < n; i++) { r[i] = a[i]<b[i] ? a[i] : b[i]; }              \
+})                                                                               \
+                                                                                 \
+void vec##n##_max(vec##n r, vec##n const a, vec##n const b) linmat_implements({  \
+    for (int i = 0; i < n; i++) { r[i] = a[i]>b[i] ? a[i] : b[i]; }              \
 })
 
 linmath_vec_definition(2)
@@ -232,9 +224,9 @@ void mat4x4_rotate_Y(mat4x4 Q, mat4x4 M, float angle) linmat_implements({
     float s = sinf(angle);
     float c = cosf(angle);
     mat4x4 R = linmath_curly_init(
-        { c, 0, s, 0},
+        { c, 0,-s, 0},
         { 0, 1, 0, 0},
-        {-s, 0, c, 0},
+        { s, 0, c, 0},
         { 0, 0, 0, 1}
     );
     mat4x4_mul(Q, M, R);
